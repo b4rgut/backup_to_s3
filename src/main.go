@@ -2,16 +2,28 @@ package main
 
 import (
 	"log"
+	"os"
 	"path"
 	"path/filepath"
+	"strings"
+
 	"s3backuper/internal/client/s3"
 	"s3backuper/internal/configs"
 	"s3backuper/internal/crypto"
 	"s3backuper/internal/filesystem"
-	"strings"
 
 	"github.com/danieljoos/wincred"
 )
+
+func init() {
+	logFile, err := os.OpenFile("cloud_upload.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Не удалось открыть файл логов: %v", err)
+	}
+
+	log.SetOutput(logFile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func main() {
 	log.Println("начало загрузки бэкапов...")
@@ -37,7 +49,7 @@ func main() {
 
 	backetName := "backup1c"
 
-	localDirPath := "D:/Test/sql"
+	localDirPath := "D:/Test/"
 
 	files := filesystem.LS(localDirPath)
 
@@ -45,12 +57,12 @@ func main() {
 		subDir := ""
 
 		switch {
-		case strings.HasPrefix(file.Name(), "HRM"):
+		case strings.HasPrefix(file.Name(), "HRM_backup"):
 			subDir = "HRM"
-		case strings.HasPrefix(file.Name(), "Accounting"):
+		case strings.HasPrefix(file.Name(), "Accounting_backup"):
 			subDir = "Accounting"
-		case strings.HasPrefix(file.Name(), "unf_30"):
-			subDir = "unf_30"
+		case strings.HasPrefix(file.Name(), "unf_30_backup"):
+			subDir = "UNF"
 		default:
 			continue
 		}
