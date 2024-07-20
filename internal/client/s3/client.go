@@ -3,9 +3,10 @@ package s3
 import (
 	"context"
 	"log"
-	"s3backuper/internal/configs"
 	"strings"
 
+	"cloud_backuper/internal/configs"
+	
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -74,6 +75,8 @@ func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool
 // Ошибки:
 // - В случае ошибки загрузки файла, ошибка будет залогирована.
 func (client *S3Client) UploadFile(bucket, objectName, path string) {
+	log.Printf("загрузка файла %s в %s", path, objectName)
+	
 	_, err := client.FPutObject(context.Background(), bucket, objectName, path, minio.PutObjectOptions{
 		ContentType: "application/octet-stream",
 	})

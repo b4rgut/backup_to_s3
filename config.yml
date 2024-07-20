@@ -1,0 +1,30 @@
+# s3:
+#   endpoint: "my_s3_endpoint.com"
+#   backet: "my_s3_backet_name"
+# 
+# local_directory_path: "C:/path/to/my/file"
+# windows_credential: "my_name_windows_credential"
+# 
+# directory_struct:
+#   - prefix_file: "prefix_1"
+#     cloud_dir: "my_s3_dir_name_1"
+#   - prefix_file: "prefix_2"
+#     cloud_dir: "my_s3_dir_name_2"
+#   ...
+#   - prefix_file: "prefix_n"
+#     cloud_dir: "my_s3_dir_name_n"
+
+s3: 
+  endpoint: "ru-msk-dr3-1.store.cloud.mts.ru"
+  backet: "backup1c"
+  
+local_directory_path: "E:/BackUp/sql"
+windows_credential: "cloud_backuper"
+
+directory_struct:
+  - prefix_file: "HRM_backup"
+    cloud_dir: "HRM"
+  - prefix_file: "Accounting_backup"
+    cloud_dir: "Accounting"
+  - prefix_file: "unf_30_backup"
+    cloud_dir: "unf_30"
