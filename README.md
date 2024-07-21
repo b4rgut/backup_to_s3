@@ -58,7 +58,7 @@ my_s3_backet_name:
 
 ## Сборка
 
-```
+```bash
 make
 ```
 
