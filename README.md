@@ -58,8 +58,8 @@ my_s3_backet_name:
 
 ## Сборка
 
-```powershell
-go build -o bin/cloud_backuper/cloud_backuper.exe -ldflags "-s -w" -a -installsuffix cgo src/main.go
+```
+make
 ```
 
 
