@@ -51,14 +51,13 @@ my_s3_backet_name:
   - prefix-3:
     - prefix_1_yyyy_mm_dd.txt`
 ```
-Можно указывать произвольное количество префиксов файлов.
 
-_Примечание: файлы, которые не имеют нужного префикса, игнорируются при загрузке!_
+**Примечание:** 
+1. Файлы, которые не имеют нужного префикса, игнорируются при загрузке!
+2. Можно указывать произвольное количество префиксов файлов.
 
 ## Сборка
-```sh
-GOOS=windows GOARCH=amd64 go build -o bin/cloud_backuper/cloud_backuper.exe -ldflags "-s -w" -a -installsuffix cgo src/main.go
-```
+
 ```powershell
 go build -o bin/cloud_backuper/cloud_backuper.exe -ldflags "-s -w" -a -installsuffix cgo src/main.go
 ```
