@@ -30,5 +30,9 @@ func LS(path string) []fs.DirEntry {
 		log.Fatalf("ошибка получения файлов дирректории: %v", err)
 	}
 
+	if len(files) == 0 {
+		log.Fatalln("дирректория пуста.")
+	}
+
 	return files
 }
