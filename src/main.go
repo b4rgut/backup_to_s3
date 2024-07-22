@@ -6,6 +6,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"cloud_backuper/internal/client/s3"
 	"cloud_backuper/internal/configs"
@@ -20,10 +21,11 @@ func init() {
 	}
 
 	log.SetOutput(logFile)
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
 func main() {
+	startTime := time.Now()
+
 	log.Println("начало загрузки бэкапов...")
 
 	config := configs.LoadConfigs()
@@ -49,5 +51,6 @@ func main() {
 
 	}
 
-	log.Println("конец загрузки бэкапов!")
+	endTime := time.Now()
+	log.Printf("конец загрузки бэкапов! Время выполнения %v\n\n", endTime.Sub(startTime))
 }
