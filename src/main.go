@@ -17,8 +17,6 @@ import (
 func main() {
 	startTime := time.Now()
 
-	log.Println("начало загрузки бэкапов...")
-
 	logFile, err := os.OpenFile("cloud_upload.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("не удалось открыть файл логов: %v", err)
@@ -26,6 +24,8 @@ func main() {
 	defer logFile.Close()
 
 	log.SetOutput(logFile)
+
+	log.Println("начало загрузки бэкапов...")
 
 	config := configs.LoadConfigs()
 
