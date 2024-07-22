@@ -51,5 +51,5 @@ func main() {
 	}
 
 	endTime := time.Now()
-	log.Printf("конец загрузки бэкапов! Время выполнения %v\n\n", endTime.Sub(startTime))
+	log.Printf("загрузка бэкапов завершена! Время выполнения %v\n\n", endTime.Sub(startTime))
 }
