@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"cloud_backuper/internal/configs"
-	
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -29,7 +29,7 @@ func New(config *configs.S3Config) *S3Client {
 	})
 
 	if err != nil {
-		log.Fatalf("Ошибка инициализации S3 клиента: %v", err)
+		log.Fatalf("ошибка инициализации S3 клиента: %v", err)
 	}
 
 	return &S3Client{minioClient}
@@ -50,20 +50,19 @@ func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool
 		if minio.ToErrorResponse(err).Code == "NoSuchKey" {
 			return false
 		}
-		log.Fatalf("Ошибка поиска файла в S3 хранилище: %v", err)
+		log.Fatalf("ошибка поиска файла в S3 хранилище: %v", err)
 	}
 
 	actualMD5 := strings.Trim(objectInfo.ETag, "\"")
-	
+
 	if actualMD5 != localFileMD5 {
 		return false
 	}
-	
+
 	log.Printf("загрузка файла не требуется, так как он уже загружен %s", objectName)
 
 	return true
 }
-
 
 // UploadFile загружает файл в указанный бакет S3.
 //
@@ -76,7 +75,7 @@ func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool
 // - В случае ошибки загрузки файла, ошибка будет залогирована.
 func (client *S3Client) UploadFile(bucket, objectName, path string) {
 	log.Printf("загрузка файла %s в %s", path, objectName)
-	
+
 	_, err := client.FPutObject(context.Background(), bucket, objectName, path, minio.PutObjectOptions{
 		ContentType: "application/octet-stream",
 	})
