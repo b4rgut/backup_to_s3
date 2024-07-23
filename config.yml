@@ -14,12 +14,18 @@
 #   - prefix_file: "prefix_n"
 #     cloud_dir: "my_s3_dir_name_n"
 
-s3: 
+s3:
+  enabled: true
   endpoint: "ru-msk-dr3-1.store.cloud.mts.ru"
   backet: "backup1c"
+  credential_name: "cloud_backuper"
+
+yandex_disk:
+  enabled: true
+  credential_name: "yd_backuper"
+  path_to_backup: "Backup1C"
   
 local_directory_path: "E:/BackUp/sql"
-windows_credential: "cloud_backuper"
 
 directory_struct:
   - prefix_file: "HRM_backup"

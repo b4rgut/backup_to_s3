@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/danieljoos/wincred"
-	
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -25,23 +25,36 @@ type DirectoryItem struct {
 // - SecretAccessKey: строка, содержащая секретный ключ доступа к S3.
 // - UseSSL: логическое значение, указывающее, следует ли использовать SSL для подключения к S3.
 type S3Config struct {
+	Enabled         bool   `yaml:"enabled"`
 	Endpoint        string `yaml:"endpoint"`
 	Backet          string `yaml:"backet"`
+	CredentialName  string `yaml:"credential_name"`
 	AccessKeyID     string
 	SecretAccessKey string
 	UseSSL          bool
 }
 
+// YDConfig содержит конфигурацию для подключения к Яндекс Диску.
+// - Token: строка, содержащая токен доступа к Яндекс Диску.
+// - PathToBackup: строка, содержащая путь к каталогу для бэкапов на Яндекс Диске.
+type YDConfig struct {
+	Enabled        bool   `yaml:"enabled"`
+	PathToBackup   string `yaml:"path_to_backup"`
+	CredentialName string `yaml:"credential_name"`
+	Token          string
+}
+
 // Config содержит конфигурацию для загрузки файлов в S3 и локального каталога.
 // - S3: структура S3Config, содержащая конфигурацию для подключения к S3.
+// - YD: содержит конфигурацию для подключения к Яндекс Диску.
 // - LocalDirectoryPath: строка, содержащая путь к локальному каталогу для загрузки файлов.
 // - WindowsCredential: строка, содержащая имя учетных данных в Windows Credential для доступа к S3.
 // - DirectoryStruct: массив структур DirectoryItem, содержащих информацию о префиксах локальных файлов
 // и каталогах в облаке, в которые их нужно загружать.
 type Config struct {
 	S3                 S3Config        `yaml:"s3"`
+	YD                 YDConfig        `yaml:"yandex_disk"`
 	LocalDirectoryPath string          `yaml:"local_directory_path"`
-	WindowsCredential  string          `yaml:"windows_credential"`
 	DirectoryStruct    []DirectoryItem `yaml:"directory_struct"`
 }
 
@@ -65,14 +78,21 @@ func LoadConfigs() *Config {
 		log.Fatalf("не удалось декодировать YAML: %v", err)
 	}
 
-	cred, err := wincred.GetGenericCredential(config.WindowsCredential)
+	cred, err := wincred.GetGenericCredential(config.S3.CredentialName)
 	if err != nil && cred == nil {
-		log.Fatalf("ошибка получения учетных данных из Windows Credential: %v", err)
+		log.Fatalf("ошибка получения учетных данных S3 из Windows Credential: %v", err)
 	}
 
 	config.S3.AccessKeyID = cred.UserName
 	config.S3.SecretAccessKey = strings.ReplaceAll(string(cred.CredentialBlob), "\x00", "")
 	config.S3.UseSSL = true
+
+	cred, err = wincred.GetGenericCredential(config.YD.CredentialName)
+	if err != nil && cred == nil {
+		log.Fatalf("ошибка получения учетных данных Яндекс Диска из Windows Credential: %v", err)
+	}
+
+	config.YD.Token = string(cred.CredentialBlob)
 
 	return &config
 }

@@ -50,7 +50,7 @@ func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool
 		if minio.ToErrorResponse(err).Code == "NoSuchKey" {
 			return false
 		}
-		log.Fatalf("ошибка поиска файла в S3 хранилище: %v", err)
+		log.Printf("ошибка поиска файла %v в S3 хранилище: %v", objectName, err)
 	}
 
 	actualMD5 := strings.Trim(objectInfo.ETag, "\"")
@@ -59,7 +59,7 @@ func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool
 		return false
 	}
 
-	log.Printf("загрузка файла не требуется, так как он уже загружен %s", objectName)
+	log.Printf("загрузка файла в S3 хранилище не требуется, так как он уже загружен %s", objectName)
 
 	return true
 }
@@ -74,13 +74,13 @@ func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool
 // Ошибки:
 // - В случае ошибки загрузки файла, ошибка будет залогирована.
 func (client *S3Client) UploadFile(bucket, objectName, path string) {
-	log.Printf("загрузка файла %s в %s", path, objectName)
+	log.Printf("загрузка файла %s в S3 хранилище %s", path, objectName)
 
 	_, err := client.FPutObject(context.Background(), bucket, objectName, path, minio.PutObjectOptions{
 		ContentType: "application/octet-stream",
 	})
 
 	if err != nil {
-		log.Printf("ошибка загрузки файла %s: %v", objectName, err)
+		log.Printf("ошибка загрузки файла %s в S3 хранилище: %v", objectName, err)
 	}
 }

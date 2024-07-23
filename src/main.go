@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"cloud_backuper/internal/client/s3"
+	"cloud_backuper/internal/client/yadisk"
 	"cloud_backuper/internal/configs"
 	"cloud_backuper/internal/crypto"
 	"cloud_backuper/internal/filesystem"
@@ -29,19 +30,36 @@ func main() {
 
 	config := configs.LoadConfigs()
 
-	s3Client := s3.New(&config.S3)
+	if !config.S3.Enabled && !config.YD.Enabled {
+		log.Fatalln("ни один из сервисов (S3 или Яндекс Диск) не включен!")
+	}
+
+	var s3Client *s3.S3Client
+	if config.S3.Enabled {
+		s3Client = s3.New(&config.S3)
+	}
+
+	var ydClient *yadisk.YDClient
+	if config.YD.Enabled {
+		ydClient = yadisk.New(config.YD.Token)
+	}
 
 	files := filesystem.LS(config.LocalDirectoryPath)
 
 	for _, file := range files {
 		for _, dir := range config.DirectoryStruct {
 			if strings.HasPrefix(file.Name(), dir.PrefixFile) {
-				objectName := path.Join(dir.CloudDir, file.Name())
 				fullPath := filepath.Join(config.LocalDirectoryPath, file.Name())
 				hash := crypto.ComputeFileMD5(fullPath)
 
-				if !s3Client.FileExists(hash, config.S3.Backet, objectName) {
-					s3Client.UploadFile(config.S3.Backet, objectName, fullPath)
+				S3ObjectName := path.Join(dir.CloudDir, file.Name())
+				if config.S3.Enabled && !s3Client.FileExists(hash, config.S3.Backet, S3ObjectName) {
+					s3Client.UploadFile(config.S3.Backet, S3ObjectName, fullPath)
+				}
+
+				YDPath := path.Join(config.YD.PathToBackup, dir.CloudDir, file.Name())
+				if config.YD.Enabled && !ydClient.FileExists(hash, filepath.Join("Backup1C", dir.CloudDir, file.Name())) {
+					ydClient.UploadFile(fullPath, YDPath)
 				}
 
 				break
