@@ -47,10 +47,8 @@ func New(config *configs.S3Config) *S3Client {
 func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool {
 	objectInfo, err := client.StatObject(context.Background(), bucket, objectName, minio.StatObjectOptions{})
 	if err != nil {
-		if minio.ToErrorResponse(err).Code == "NoSuchKey" {
-			return false
-		}
 		log.Printf("ошибка поиска файла %v в S3 хранилище: %v", objectName, err)
+		return false
 	}
 
 	actualMD5 := strings.Trim(objectInfo.ETag, "\"")
