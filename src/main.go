@@ -18,7 +18,9 @@ import (
 func main() {
 	startTime := time.Now()
 
-	logFile, err := os.OpenFile("cloud_upload.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logPath := filepath.Join(filesystem.GetExecutablePath(), "cloud_upload.log")
+
+	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("не удалось открыть файл логов: %v", err)
 	}
@@ -29,10 +31,6 @@ func main() {
 	log.Println("начало загрузки бэкапов...")
 
 	config := configs.LoadConfigs()
-
-	if !config.S3.Enabled && !config.YD.Enabled {
-		log.Fatalln("ни один из сервисов (S3 или Яндекс Диск) не включен!")
-	}
 
 	var s3Client *s3.S3Client
 	if config.S3.Enabled {

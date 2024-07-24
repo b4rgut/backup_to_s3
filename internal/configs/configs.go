@@ -1,8 +1,10 @@
 package configs
 
 import (
+	"cloud_backuper/internal/filesystem"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/danieljoos/wincred"
@@ -67,7 +69,8 @@ type Config struct {
 // - В случае ошибки чтения файла конфигурации или декодирования YAML, функция завершает выполнение с логированием фатальной ошибки.
 // - В случае ошибки получения учетных данных из Windows Credential, функция завершает выполнение с логированием фатальной ошибки.
 func LoadConfigs() *Config {
-	data, err := os.ReadFile("config.yml")
+	configPath := filepath.Join(filesystem.GetExecutablePath(), "config.yml")
+	data, err := os.ReadFile(configPath)
 	if err != nil {
 		log.Fatalf("не удалось прочитать файл конфигурации: %v", err)
 	}
@@ -78,21 +81,30 @@ func LoadConfigs() *Config {
 		log.Fatalf("не удалось декодировать YAML: %v", err)
 	}
 
-	cred, err := wincred.GetGenericCredential(config.S3.CredentialName)
-	if err != nil && cred == nil {
-		log.Fatalf("ошибка получения учетных данных S3 из Windows Credential: %v", err)
+	if !config.S3.Enabled && !config.YD.Enabled {
+		log.Fatalln("ни один из сервисов (S3 или Яндекс Диск) не включен!")
+	}
+	
+	if config.S3.Enabled {
+		cred, err := wincred.GetGenericCredential(config.S3.CredentialName)
+		if err != nil && cred == nil {
+			log.Fatalf("ошибка получения учетных данных S3 из Windows Credential: %v", err)
+		}
+
+		config.S3.AccessKeyID = cred.UserName
+		config.S3.SecretAccessKey = strings.ReplaceAll(string(cred.CredentialBlob), "\x00", "")
+		config.S3.UseSSL = true
 	}
 
-	config.S3.AccessKeyID = cred.UserName
-	config.S3.SecretAccessKey = strings.ReplaceAll(string(cred.CredentialBlob), "\x00", "")
-	config.S3.UseSSL = true
+	if config.YD.Enabled {
+		cred, err := wincred.GetGenericCredential(config.YD.CredentialName)
+		if err != nil && cred == nil {
+			log.Fatalf("ошибка получения учетных данных Яндекс Диска из Windows Credential: %v", err)
+		}
 
-	cred, err = wincred.GetGenericCredential(config.YD.CredentialName)
-	if err != nil && cred == nil {
-		log.Fatalf("ошибка получения учетных данных Яндекс Диска из Windows Credential: %v", err)
+		config.YD.Token = string(cred.CredentialBlob)
+
 	}
-
-	config.YD.Token = string(cred.CredentialBlob)
 
 	return &config
 }

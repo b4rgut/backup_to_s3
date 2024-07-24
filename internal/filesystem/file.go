@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 // LS возвращает список файлов и директорий в указанной директории.
@@ -35,4 +36,13 @@ func LS(path string) []fs.DirEntry {
 	}
 
 	return files
+}
+
+func GetExecutablePath() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatalf("не удалось получить путь к исполняемому файлу: %v", err)
+	}
+
+	return filepath.Dir(exePath)
 }
