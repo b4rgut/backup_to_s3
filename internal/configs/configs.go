@@ -32,8 +32,8 @@ type S3Config struct {
 	CredentialName  string `yaml:"credential_name"`
 	AccessKeyID     string
 	SecretAccessKey string
-	PartSize        int64 `yaml:"part_size"`
-	Enabled         bool  `yaml:"enabled"`
+	PartSize        uint64 `yaml:"part_size"`
+	Enabled         bool   `yaml:"enabled"`
 	UseSSL          bool
 }
 

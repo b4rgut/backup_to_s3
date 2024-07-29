@@ -52,7 +52,7 @@ func main() {
 
 				S3ObjectName := path.Join(dir.CloudDir, file.Name())
 				if config.S3.Enabled && !s3Client.FileExists(hash, config.S3.Backet, S3ObjectName) {
-					s3Client.UploadFile(config.S3.Backet, S3ObjectName, fullPath)
+					s3Client.UploadFile(config.S3.Backet, S3ObjectName, fullPath, config.S3.PartSize)
 				}
 
 				YDPath := path.Join(config.YD.PathToBackup, dir.CloudDir, file.Name())

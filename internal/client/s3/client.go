@@ -75,11 +75,12 @@ func (client *S3Client) FileExists(localFileMD5, bucket, objectName string) bool
 //
 // Ошибки:
 // - В случае ошибки загрузки файла, ошибка будет залогирована.
-func (client *S3Client) UploadFile(bucket, objectName, path string) {
+func (client *S3Client) UploadFile(bucket, objectName, path string, partSize uint64) {
 	log.Printf("загрузка файла %s в S3 хранилище %s", path, objectName)
 
 	_, err := client.FPutObject(context.Background(), bucket, objectName, path, minio.PutObjectOptions{
 		ContentType: "application/octet-stream",
+		PartSize: partSize,
 	})
 
 	if err != nil {

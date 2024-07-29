@@ -20,7 +20,7 @@ import (
 //
 // Ошибки:
 // - В случае ошибки открытия файла или вычисления хэша, функция логирует ошибку и возвращает пустую строку.
-func ComputeFileETag(filePath string, partSize int64) string {
+func ComputeFileETag(filePath string, partSize uint64) string {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Printf("не удалось открыть файл: %v", err)
