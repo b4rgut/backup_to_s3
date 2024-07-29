@@ -19,6 +19,7 @@ s3:
   endpoint: "ru-msk-dr3-1.store.cloud.mts.ru"
   backet: "backup1c"
   credential_name: "cloud_backuper"
+  part_size: 15728640 # 15MB
 
 yandex_disk:
   enabled: true

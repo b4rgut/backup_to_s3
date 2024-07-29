@@ -6,32 +6,68 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 )
 
-// ComputeFileMD5 вычисляет MD5-хеш для указанного файла.
+// ComputeFileETag вычисляет ETag для указанного файла.
 //
 // Параметры:
-// - filePath: строка, содержащая путь к файлу, для которого нужно вычислить MD5-хеш.
+// - filePath: строка, содержащая путь к файлу, для которого нужно вычислить ETag.
+// - partSize: размер каждой части в байтах.
 //
 // Возвращает:
-// - строка, содержащая MD5-хеш файла в шестнадцатеричном формате. Если произошла ошибка, возвращает пустую строку.
+// - строка, содержащая ETag файла в формате MD5SUM-N. Если произошла ошибка, возвращает пустую строку.
 //
 // Ошибки:
 // - В случае ошибки открытия файла или вычисления хэша, функция логирует ошибку и возвращает пустую строку.
-func ComputeFileMD5(filePath string) string {
-	log.Printf("вычисление хеша файла %s", filePath)
-
+func ComputeFileETag(filePath string, partSize int64) string {
 	file, err := os.Open(filePath)
 	if err != nil {
+		log.Printf("не удалось открыть файл: %v", err)
 		return ""
 	}
 	defer file.Close()
 
-	hash := md5.New()
-	if _, err := io.Copy(hash, file); err != nil {
-		log.Printf("ошибка вычисления хэша файла %s: %v", filePath, err)
-		return ""
+	var hashes []byte
+	buffer := make([]byte, partSize)
+
+	parts := 0
+	for {
+		n, err := file.Read(buffer)
+		if n > 0 {
+			hash := md5.Sum(buffer[:n])
+			hashes = append(hashes, hash[:]...)
+			parts++
+		}
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Printf("ошибка чтения файла: %v", err)
+			return ""
+		}
 	}
 
-	return hex.EncodeToString(hash.Sum(nil))
+	// Объединяем все хэши в одну строку
+
+	var finalSum []byte
+
+	if parts == 1 {
+		finalSum = hashes
+	} else {
+		h := md5.New()
+		_, err := h.Write(hashes)
+		if err != nil {
+			return ""
+		}
+		finalSum = h.Sum(nil)
+	}
+
+	sumHex := hex.EncodeToString(finalSum)
+
+	if parts > 1 {
+		sumHex += "-" + strconv.Itoa(parts)
+	}
+
+	return sumHex
 }

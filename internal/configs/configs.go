@@ -27,12 +27,13 @@ type DirectoryItem struct {
 // - SecretAccessKey: строка, содержащая секретный ключ доступа к S3.
 // - UseSSL: логическое значение, указывающее, следует ли использовать SSL для подключения к S3.
 type S3Config struct {
-	Enabled         bool   `yaml:"enabled"`
 	Endpoint        string `yaml:"endpoint"`
 	Backet          string `yaml:"backet"`
 	CredentialName  string `yaml:"credential_name"`
 	AccessKeyID     string
 	SecretAccessKey string
+	PartSize        int64 `yaml:"part_size"`
+	Enabled         bool  `yaml:"enabled"`
 	UseSSL          bool
 }
 

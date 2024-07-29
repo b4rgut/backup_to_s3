@@ -48,7 +48,7 @@ func main() {
 		for _, dir := range config.DirectoryStruct {
 			if strings.HasPrefix(file.Name(), dir.PrefixFile) {
 				fullPath := filepath.Join(config.LocalDirectoryPath, file.Name())
-				hash := crypto.ComputeFileMD5(fullPath)
+				hash := crypto.ComputeFileETag(fullPath, config.S3.PartSize)
 
 				S3ObjectName := path.Join(dir.CloudDir, file.Name())
 				if config.S3.Enabled && !s3Client.FileExists(hash, config.S3.Backet, S3ObjectName) {
