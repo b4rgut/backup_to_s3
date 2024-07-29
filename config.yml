@@ -1,18 +1,24 @@
 # s3:
-#   endpoint: "my_s3_endpoint.com"
-#   backet: "my_s3_backet_name"
-# 
-# local_directory_path: "C:/path/to/my/file"
-# windows_credential: "my_name_windows_credential"
-# 
-# directory_struct:
-#   - prefix_file: "prefix_1"
-#     cloud_dir: "my_s3_dir_name_1"
-#   - prefix_file: "prefix_2"
-#     cloud_dir: "my_s3_dir_name_2"
-#   ...
-#   - prefix_file: "prefix_n"
-#     cloud_dir: "my_s3_dir_name_n"
+#    enabled: true
+#    endpoint: "my_s3_endpoint.com" 
+#    backet: "my_s3_backet_name"
+#    credential_name: "my_name_windows_credential_s3"
+#    part_size: 15728640 # 15MB в байтах
+#
+# yandex_disk:
+#   enabled: true
+#   credential_name: "my_name_windows_credential_yd"
+#   path_to_backup: "Backup1C"
+#
+#  local_directory_path: "D:/files/"
+#
+#  directory_struct:
+#    - prefix_file: "prefix_1"
+#      cloud_dir: "prefix_1"
+#    - prefix_file: "prefix_2"
+#      cloud_dir: "prefix_2"
+#    - prefix_file: "prefix_3"
+#      cloud_dir: "prefix_3"
 
 s3:
   enabled: true
