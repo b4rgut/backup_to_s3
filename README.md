@@ -26,12 +26,19 @@
 Тогда файл конфигурации будет иметь следующий вид:
 ```yml
 s3:
+   enabled: true
    endpoint: "my_s3_endpoint.com" 
    backet: "my_s3_backet_name"
- 
+   credential_name: "my_name_windows_credential_s3"
+   part_size: 15728640 # 15MB в байтах
+
+yandex_disk:
+  enabled: true
+  credential_name: "my_name_windows_credential_yd"
+  path_to_backup: "Backup1C"
+
  local_directory_path: "D:/files/"
- windows_credential: "my_name_windows_credential"
- 
+
  directory_struct:
    - prefix_file: "prefix_1"
      cloud_dir: "prefix_1"
@@ -53,8 +60,9 @@ my_s3_backet_name:
 ```
 
 **Примечание:** 
-1. Файлы, которые не имеют нужного префикса, игнорируются при загрузке!
-2. Можно указывать произвольное количество префиксов файлов.
+1. Можно отключить один из хранилищ `enabled: false`.
+2. Файлы, которые не имеют нужного префикса, игнорируются при загрузке!
+3. Можно указывать произвольное количество префиксов файлов.
 
 ## Сборка
 
