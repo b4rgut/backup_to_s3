@@ -13,7 +13,7 @@ import (
 //
 // Параметры:
 // - filePath: строка, содержащая путь к файлу, для которого нужно вычислить ETag.
-// - partSize: размер каждой части в байтах.
+// - partSize: размер каждой части файла в байтах.
 //
 // Возвращает:
 // - строка, содержащая ETag файла в формате MD5SUM-N. Если произошла ошибка, возвращает пустую строку.
@@ -34,17 +34,19 @@ func ComputeFileETag(filePath string, partSize uint64) string {
 	parts := 0
 	for {
 		n, err := file.Read(buffer)
+		if err != nil {
+			log.Printf("ошибка чтения файла: %v", err)
+			return ""
+		}
+
+		if err == io.EOF {
+			break
+		}
+
 		if n > 0 {
 			hash := md5.Sum(buffer[:n])
 			hashes = append(hashes, hash[:]...)
 			parts++
-		}
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Printf("ошибка чтения файла: %v", err)
-			return ""
 		}
 	}
 
