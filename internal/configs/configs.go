@@ -84,7 +84,7 @@ func LoadConfigs() *Config {
 	if !config.S3.Enabled && !config.YD.Enabled {
 		log.Fatalln("ни один из сервисов (S3 или Яндекс Диск) не включен!")
 	}
-	
+
 	if config.S3.Enabled {
 		cred, err := wincred.GetGenericCredential(config.S3.CredentialName)
 		if err != nil && cred == nil {
@@ -102,8 +102,7 @@ func LoadConfigs() *Config {
 			log.Fatalf("ошибка получения учетных данных Яндекс Диска из Windows Credential: %v", err)
 		}
 
-		config.YD.Token = string(cred.CredentialBlob)
-
+		config.YD.Token = strings.ReplaceAll(string(cred.CredentialBlob), "\x00", "")
 	}
 
 	return &config

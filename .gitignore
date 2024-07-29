@@ -1,2 +1,3 @@
 bin*
 cloud_upload.log
+.env
