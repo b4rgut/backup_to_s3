@@ -36,13 +36,12 @@ func ComputeFileETag(filePath string, partSize uint64) string {
 	parts := 0
 	for {
 		n, err := file.Read(buffer)
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			log.Printf("ошибка чтения файла: %v", err)
 			return ""
-		}
-
-		if err == io.EOF {
-			break
 		}
 
 		if n > 0 {
