@@ -3,10 +3,10 @@ package crypto
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"log"
 	"os"
-	"strconv"
 )
 
 // ComputeFileETag вычисляет ETag для указанного файла.
@@ -53,24 +53,15 @@ func ComputeFileETag(filePath string, partSize uint64) string {
 
 	// Объединяем все хэши в одну строку
 
-	var finalSum []byte
-
 	if parts == 1 {
-		finalSum = hashes
-	} else {
-		h := md5.New()
-		_, err := h.Write(hashes)
-		if err != nil {
-			return ""
-		}
-		finalSum = h.Sum(nil)
+		return hex.EncodeToString(hashes)
 	}
 
-	sumHex := hex.EncodeToString(finalSum)
-
-	if parts > 1 {
-		sumHex += "-" + strconv.Itoa(parts)
+	hash := md5.New()
+	_, err = hash.Write(hashes)
+	if err != nil {
+		return ""
 	}
 
-	return sumHex
+	return fmt.Sprintf("%s-%d", hex.EncodeToString(hash.Sum(nil)), parts)
 }
